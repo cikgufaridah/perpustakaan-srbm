@@ -136,26 +136,50 @@ window.pulangkanBuku = function(id){
 };
 
 function paparData(data){
-  let dipinjam = "<table><tr><th>Nama</th><th>Tahun</th><th>Buku</th><th>Tindakan</th></tr>";
-  let kiraan = {};
+  let kumpulan = {};
 
-  Object.keys(data).forEach(id=>{
-    const r = data[id];
+Object.keys(data).forEach(id=>{
+  const r = data[id];
 
-    if(!kiraan[r.nama]) kiraan[r.nama] = {nama:r.nama, tahun:r.tahun, jumlah:0};
-    kiraan[r.nama].jumlah++;
-
-    if(r.status === "Dipinjam"){
-      dipinjam += `<tr>
-        <td>${r.nama}</td>
-        <td>${r.tahun}</td>
-        <td>${r.tajuk}<br><small>${r.tarikhPinjam}</small></td>
-        <td><button class="btn2" onclick="pulangkanBuku('${id}')">Pulangkan</button></td>
-      </tr>`;
+  if(r.status === "Dipinjam"){
+    if(!kumpulan[r.nama]){
+      kumpulan[r.nama] = {
+        tahun: r.tahun,
+        buku: []
+      };
     }
+
+    kumpulan[r.nama].buku.push({
+      id: id,
+      tajuk: r.tajuk,
+      tarikhPinjam: r.tarikhPinjam
+    });
+  }
+});
+
+let dipinjam = "<table><tr><th>Nama</th><th>Tahun</th><th>Buku Dipinjam</th><th>Tindakan</th></tr>";
+
+Object.keys(kumpulan).forEach(nama=>{
+  const murid = kumpulan[nama];
+
+  let bukuHTML = "";
+  let tindakanHTML = "";
+
+  murid.buku.forEach((b, index)=>{
+    bukuHTML += `📚 ${index + 1}. ${b.tajuk}<br><small>${b.tarikhPinjam}</small><br>`;
+    tindakanHTML += `<button class="btn2" onclick="pulangkanBuku('${b.id}')">Pulangkan Buku ${index + 1}</button><br>`;
   });
 
-  dipinjam += "</table>";
+  dipinjam += `
+    <tr>
+      <td>${nama}</td>
+      <td>${murid.tahun}</td>
+      <td>${bukuHTML}</td>
+      <td>${tindakanHTML}</td>
+    </tr>`;
+});
+
+dipinjam += "</table>";
   document.getElementById("senaraiDipinjam").innerHTML = dipinjam;
 
   const rank = Object.values(kiraan).sort((a,b)=>b.jumlah-a.jumlah);
