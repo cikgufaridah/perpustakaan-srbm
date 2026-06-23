@@ -1,1 +1,188 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perpustakaan SRBM</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f5f3ff;margin:0;padding:0;color:#222}
+    header{background:#5b21b6;color:white;padding:18px;text-align:center}
+    .container{max-width:900px;margin:auto;padding:15px}
+    .card{background:white;border-radius:14px;padding:15px;margin:12px 0;box-shadow:0 2px 8px #ccc}
+    input,select,button{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #ccc;font-size:16px}
+    button{background:#5b21b6;color:white;border:none;font-weight:bold}
+    .btn2{background:#15803d}
+    .btn3{background:#dc2626}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{border:1px solid #ddd;padding:8px;text-align:left}
+    th{background:#ede9fe}
+    h2{color:#4c1d95}
+  </style>
+</head>
+<body>
 
+<header>
+  <h1>📚 Perpustakaan SR Batu Marang</h1>
+  <p>Rekod Pinjaman dan Pemulangan Buku</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>📖 Pinjam Buku</h2>
+    <input id="nama" placeholder="Nama murid">
+    <select id="tahun">
+      <option value="">Pilih tahun</option>
+      <option>Tahun 1</option><option>Tahun 2</option><option>Tahun 3</option>
+      <option>Tahun 4</option><option>Tahun 5</option><option>Tahun 6</option>
+    </select>
+    <input id="tajuk" placeholder="Tajuk buku">
+    <select id="kategori">
+      <option>Cerita Melayu</option>
+      <option>Cerita Inggeris</option>
+      <option>Pengetahuan Am</option>
+      <option>Agama</option>
+      <option>Sains</option>
+      <option>Lain-lain</option>
+    </select>
+    <button onclick="pinjamBuku()">Simpan Pinjaman</button>
+  </div>
+
+  <div class="card">
+    <h2>📚 Buku Masih Dipinjam</h2>
+    <div id="senaraiDipinjam">Memuatkan data...</div>
+  </div>
+
+  <div class="card">
+    <h2>🔍 Cari Murid</h2>
+    <input id="cariNama" placeholder="Taip nama murid" oninput="cariMurid()">
+    <div id="hasilCari"></div>
+  </div>
+
+  <div class="card">
+    <h2>🏆 Ranking Peminjam Buku</h2>
+    <div id="ranking">Memuatkan ranking...</div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDuoVBHNFjV0EWGYzcPE8M_o_XXEzz8DmY",
+  authDomain: "perpustakaan-srbm.firebaseapp.com",
+  databaseURL: "https://perpustakaan-srbm-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "perpustakaan-srbm",
+  storageBucket: "perpustakaan-srbm.firebasestorage.app",
+  messagingSenderId: "945482111304",
+  appId: "1:945482111304:web:94df339d7ef1b18b63fb7d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+let semuaData = {};
+
+window.pinjamBuku = function(){
+  const nama = document.getElementById("nama").value.trim();
+  const tahun = document.getElementById("tahun").value;
+  const tajuk = document.getElementById("tajuk").value.trim();
+  const kategori = document.getElementById("kategori").value;
+
+  if(!nama || !tahun || !tajuk){
+    alert("Sila isi nama murid, tahun dan tajuk buku.");
+    return;
+  }
+
+  const tarikh = new Date().toLocaleDateString("ms-BN");
+
+  push(ref(db, "pinjaman"), {
+    nama, tahun, tajuk, kategori,
+    tarikhPinjam: tarikh,
+    tarikhPulang: "",
+    status: "Dipinjam"
+  });
+
+  alert("Rekod pinjaman berjaya disimpan.");
+  document.getElementById("nama").value = "";
+  document.getElementById("tahun").value = "";
+  document.getElementById("tajuk").value = "";
+};
+
+window.pulangkanBuku = function(id){
+  const tarikh = new Date().toLocaleDateString("ms-BN");
+  update(ref(db, "pinjaman/" + id), {
+    status: "Dipulangkan",
+    tarikhPulang: tarikh
+  });
+  alert("Buku berjaya dipulangkan.");
+};
+
+function paparData(data){
+  let dipinjam = "<table><tr><th>Nama</th><th>Tahun</th><th>Buku</th><th>Tindakan</th></tr>";
+  let kiraan = {};
+
+  Object.keys(data).forEach(id=>{
+    const r = data[id];
+
+    if(!kiraan[r.nama]) kiraan[r.nama] = {nama:r.nama, tahun:r.tahun, jumlah:0};
+    kiraan[r.nama].jumlah++;
+
+    if(r.status === "Dipinjam"){
+      dipinjam += `<tr>
+        <td>${r.nama}</td>
+        <td>${r.tahun}</td>
+        <td>${r.tajuk}<br><small>${r.tarikhPinjam}</small></td>
+        <td><button class="btn2" onclick="pulangkanBuku('${id}')">Pulangkan</button></td>
+      </tr>`;
+    }
+  });
+
+  dipinjam += "</table>";
+  document.getElementById("senaraiDipinjam").innerHTML = dipinjam;
+
+  const rank = Object.values(kiraan).sort((a,b)=>b.jumlah-a.jumlah);
+  let html = "<table><tr><th>Kedudukan</th><th>Nama</th><th>Tahun</th><th>Jumlah</th></tr>";
+  rank.forEach((r,i)=>{
+    html += `<tr><td>${i+1}</td><td>${r.nama}</td><td>${r.tahun}</td><td>${r.jumlah}</td></tr>`;
+  });
+  html += "</table>";
+  document.getElementById("ranking").innerHTML = html;
+}
+
+window.cariMurid = function(){
+  const q = document.getElementById("cariNama").value.toLowerCase();
+  if(!q){
+    document.getElementById("hasilCari").innerHTML = "";
+    return;
+  }
+
+  let html = "<table><tr><th>Nama</th><th>Tahun</th><th>Buku</th><th>Status</th></tr>";
+  Object.values(semuaData).forEach(r=>{
+    if(r.nama.toLowerCase().includes(q)){
+      html += `<tr>
+        <td>${r.nama}</td>
+        <td>${r.tahun}</td>
+        <td>${r.tajuk}</td>
+        <td>${r.status}</td>
+      </tr>`;
+    }
+  });
+  html += "</table>";
+  document.getElementById("hasilCari").innerHTML = html;
+};
+
+onValue(ref(db, "pinjaman"), snapshot=>{
+  semuaData = snapshot.val() || {};
+  if(Object.keys(semuaData).length === 0){
+    document.getElementById("senaraiDipinjam").innerHTML = "Belum ada rekod.";
+    document.getElementById("ranking").innerHTML = "Belum ada ranking.";
+  } else {
+    paparData(semuaData);
+  }
+});
+</script>
+
+</body>
+</html>
