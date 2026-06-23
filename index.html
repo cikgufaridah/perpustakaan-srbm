@@ -99,21 +99,33 @@ window.pinjamBuku = function(){
     return;
   }
 
+  const jumlahSedangPinjam = Object.values(semuaData).filter(r =>
+    r.nama.toLowerCase() === nama.toLowerCase() &&
+    r.status === "Dipinjam"
+  ).length;
+
+  if(jumlahSedangPinjam >= 2){
+    alert("Murid ini sudah meminjam 2 buah buku. Sila pulangkan buku dahulu.");
+    return;
+  }
+
   const tarikh = new Date().toLocaleDateString("ms-BN");
 
   push(ref(db, "pinjaman"), {
-    nama, tahun, tajuk, kategori,
+    nama: nama,
+    tahun: tahun,
+    tajuk: tajuk,
+    kategori: kategori,
     tarikhPinjam: tarikh,
     tarikhPulang: "",
     status: "Dipinjam"
   });
 
-  alert("Rekod pinjaman berjaya disimpan.");
+  alert("Pinjaman berjaya disimpan.");
+
   document.getElementById("nama").value = "";
-  document.getElementById("tahun").value = "";
   document.getElementById("tajuk").value = "";
 };
-
 window.pulangkanBuku = function(id){
   const tarikh = new Date().toLocaleDateString("ms-BN");
   update(ref(db, "pinjaman/" + id), {
