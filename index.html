@@ -18,6 +18,8 @@
     th{background:#ede9fe}
     h2{color:#4c1d95}
   </style>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b21b6">
 </head>
 <body>
 
@@ -182,6 +184,11 @@ onValue(ref(db, "pinjaman"), snapshot=>{
     paparData(semuaData);
   }
 });
+</script>
+  <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
 </script>
 
 </body>
