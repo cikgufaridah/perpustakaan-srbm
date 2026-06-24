@@ -137,19 +137,25 @@ window.pulangkanBuku = function(id){
 
 function paparData(data){
   let kumpulan = {};
-
+let kiraan = {};
 Object.keys(data).forEach(id=>{
   const r = data[id];
+  const namaKey = r.nama.toLowerCase();
+const namaPaparan = r.nama.charAt(0).toUpperCase() + r.nama.slice(1).toLowerCase();
+
+if(!kiraan[namaKey]) kiraan[namaKey] = {nama:namaPaparan, tahun:r.tahun, jumlah:0};
+kiraan[namaKey].jumlah++;
 
   if(r.status === "Dipinjam"){
-    if(!kumpulan[r.nama]){
-      kumpulan[r.nama] = {
+  if(!kumpulan[namaKey]){
+  kumpulan[namaKey] = {
+    nama: namaPaparan,
         tahun: r.tahun,
         buku: []
       };
     }
 
-    kumpulan[r.nama].buku.push({
+   kumpulan[namaKey].buku.push({
       id: id,
       tajuk: r.tajuk,
       tarikhPinjam: r.tarikhPinjam
@@ -172,7 +178,7 @@ Object.keys(kumpulan).forEach(nama=>{
 
   dipinjam += `
     <tr>
-      <td>${nama}</td>
+     <td>${murid.nama}</td>
       <td>${murid.tahun}</td>
       <td>${bukuHTML}</td>
       <td>${tindakanHTML}</td>
