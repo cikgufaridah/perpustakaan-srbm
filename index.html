@@ -128,10 +128,13 @@ window.pinjamBuku = function(){
   document.getElementById("tajuk").value = "";
 };
 window.pulangkanBuku = function(id){
-  if(confirm("Padam rekod ini?")){
-    remove(ref(db, "pinjaman/" + id));
-    alert("Rekod berjaya dipadam.");
-  }
+    if(confirm("Adakah buku ini sudah dipulangkan?")){
+        update(ref(db, "pinjaman/" + id), {
+            status: "Dipulangkan",
+            tarikhPulang: new Date().toLocaleDateString("ms-BN")
+        });
+        alert("Buku berjaya dipulangkan.");
+    }
 };
 
 function paparData(data){
