@@ -139,15 +139,25 @@ function paparData(data){
   let kumpulan = {};
 let kiraan = {};
 Object.keys(data).forEach(id=>{
-  const r = data[id];
-  const namaKey = r.nama.toLowerCase();
-const namaPaparan = r.nama.charAt(0).toUpperCase() + r.nama.slice(1).toLowerCase();
+ const r = data[id];
 
-if(!kiraan[namaKey]) kiraan[namaKey] = {nama:namaPaparan, tahun:r.tahun, jumlah:0};
+const namaKey = (r.nama || "").trim().toLowerCase();
+
+if(!namaKey){
+  return;
+}
+
+const namaPaparan = namaKey.charAt(0).toUpperCase() + namaKey.slice(1);
+
+if(!kiraan[namaKey]){
+  kiraan[namaKey] = {
+    nama: namaPaparan,
+    tahun: r.tahun,
+    jumlah: 0
+  };
+}
+
 kiraan[namaKey].jumlah++;
-
-  if(r.status === "Dipinjam"){
-  if(!kumpulan[namaKey]){
   kumpulan[namaKey] = {
     nama: namaPaparan,
         tahun: r.tahun,
