@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="ms">window.pulangkanBuku
+  
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -72,7 +73,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDuoVBHNFjV0EWGYzcPE8M_o_XXEzz8DmY",
@@ -127,12 +128,10 @@ window.pinjamBuku = function(){
   document.getElementById("tajuk").value = "";
 };
 window.pulangkanBuku = function(id){
-  const tarikh = new Date().toLocaleDateString("ms-BN");
-  update(ref(db, "pinjaman/" + id), {
-    status: "Dipulangkan",
-    tarikhPulang: tarikh
-  });
-  alert("Buku berjaya dipulangkan.");
+  if(confirm("Padam rekod ini?")){
+    remove(ref(db, "pinjaman/" + id));
+    alert("Rekod berjaya dipadam.");
+  }
 };
 
 function paparData(data){
