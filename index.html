@@ -51,7 +51,8 @@
 <input id="nama" placeholder="Nama Murid" readonly>
     <select id="tahun">
       <option value="">Pilih tahun</option>
-      <option>Tahun 1</option><option>Tahun 2</option><option>Tahun 3</option>
+      <option>Tahun 1</option><option>Tahun 2<
+                                               /option><option>Tahun 3</option>
       <option>Tahun 4</option><option>Tahun 5</option><option>Tahun 6</option>
     </select>
     <input id="tajuk" placeholder="Tajuk buku">
@@ -73,7 +74,7 @@
 
   <div class="card">
     <h2>🔍 Cari Murid</h2>
-    <input id="cariNama" placeholder="Taip nama murid" oninput="cariMurid()">
+    <input id="cariNama" placeholder="Taip nama murid" oninput="cariNama()"
     <div id="hasilCari"></div>
   </div>
 
@@ -256,7 +257,7 @@ dipinjam += "</table>";
   document.getElementById("ranking").innerHTML = html;
 }
 
-window.cariMurid = function(){
+window.cariNama = function(){
   const q = document.getElementById("cariNama").value.toLowerCase();
   if(!q){
     document.getElementById("hasilCari").innerHTML = "";
