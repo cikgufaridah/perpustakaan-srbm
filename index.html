@@ -101,7 +101,38 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 let semuaData = {};
+window.cariMurid = function () {
 
+  const noAhli = document.getElementById("noAhli").value.trim();
+
+  if (!noAhli) {
+    alert("Sila masukkan No. Ahli.");
+    return;
+  }
+
+  const muridRef = ref(db, "murid/" + noAhli);
+
+  onValue(muridRef, (snapshot) => {
+
+    if (snapshot.exists()) {
+
+      const murid = snapshot.val();
+
+      document.getElementById("nama").value = murid.nama;
+     document.getElementById("tahun").value = "Tahun " + murid.tahun;
+
+    } else {
+
+      alert("No. Ahli tidak dijumpai.");
+
+      document.getElementById("nama").value = "";
+      document.getElementById("tahun").value = "";
+
+    }
+
+  }, { onlyOnce: true });
+
+};
 window.pinjamBuku = function(){
   const nama = document.getElementById("nama").value.trim();
   const tahun = document.getElementById("tahun").value;
