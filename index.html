@@ -55,6 +55,7 @@
                                                /option><option>Tahun 3</option>
       <option>Tahun 4</option><option>Tahun 5</option><option>Tahun 6</option>
     </select>
+    <input id="noAcc" placeholder="No. Acc Buku">
     <input id="tajuk" placeholder="Tajuk buku">
     <select id="kategori">
       <option>Cerita Melayu</option>
@@ -138,11 +139,13 @@ window.pinjamBuku = function(){
   const nama = document.getElementById("nama").value.trim();
   const tahun = document.getElementById("tahun").value;
   const tajuk = document.getElementById("tajuk").value.trim();
+  const noAcc = document.getElementById("noAcc").value.trim();
   const kategori = document.getElementById("kategori").value;
 
-  if(!nama || !tahun || !tajuk){
-    alert("Sila isi nama murid, tahun dan tajuk buku.");
+ if(!nama || !tahun || !noAcc || !tajuk){
+    alert("Sila isi nama murid, tahun, No. Acc dan tajuk buku.");
     return;
+}
   }
 
   const jumlahSedangPinjam = Object.values(semuaData).filter(r =>
@@ -160,6 +163,7 @@ window.pinjamBuku = function(){
   push(ref(db, "pinjaman"), {
     nama: nama,
     tahun: tahun,
+      noAcc: noAcc,
     tajuk: tajuk,
     kategori: kategori,
     tarikhPinjam: tarikh,
