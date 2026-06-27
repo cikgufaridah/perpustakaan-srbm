@@ -82,7 +82,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, update, remove, set } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDuoVBHNFjV0EWGYzcPE8M_o_XXEzz8DmY",
@@ -252,6 +252,48 @@ onValue(ref(db, "pinjaman"), snapshot=>{
     paparData(semuaData);
   }
 });
+  window.importMuridCSV = function () {
+  const fileInput = document.getElementById("csvFile");
+  const status = document.getElementById("importStatus");
+
+  if (!fileInput.files.length) {
+    alert("Sila pilih fail CSV dahulu.");
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+
+  reader.onload = async function (e) {
+    const text = e.target.result;
+    const rows = text.split(/\r?\n/).filter(row => row.trim() !== "");
+
+    let jumlah = 0;
+
+    for (let i = 1; i < rows.length; i++) {
+      const cols = rows[i].split(",");
+
+      const noAhli = (cols[0] || "").trim();
+      const nama = (cols[1] || "").trim();
+      const tahun = (cols[2] || "").trim();
+
+      if (noAhli && nama && tahun) {
+        await set(ref(db, "murid/" + noAhli), {
+          noAhli: noAhli,
+          nama: nama,
+          tahun: tahun
+        });
+
+        jumlah++;
+      }
+    }
+
+    status.innerHTML = "✅ " + jumlah + " orang murid berjaya diimport.";
+    alert(jumlah + " orang murid berjaya diimport.");
+  };
+
+  reader.readAsText(file);
+};
 </script>
   <script>
 if ("serviceWorker" in navigator) {
