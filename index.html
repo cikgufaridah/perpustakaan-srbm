@@ -67,6 +67,7 @@
       <option>Lain-lain</option>
     </select>
     <button onclick="pinjamBuku()">Simpan Pinjaman</button>
+    <button onclick="kosongkanBorang()">🧹 Kosongkan Borang</button>
   </div>
 
   <div class="card">
@@ -142,6 +143,7 @@ window.pinjamBuku = function(){
   const tajuk = document.getElementById("tajuk").value.trim();
   const noAcc = document.getElementById("noAcc").value.trim();
   const kategori = document.getElementById("kategori").value;
+ 
 
  if(!nama || !tahun || !noAcc || !tajuk){
     alert("Sila isi nama murid, tahun, No. Acc dan tajuk buku.");
@@ -173,8 +175,7 @@ window.pinjamBuku = function(){
 
   alert("Pinjaman berjaya disimpan.");
 
-  document.getElementById("nama").value = "";
-  document.getElementById("tajuk").value = "";
+kosongkanBorang();
 };
 window.pulangkanBuku = function(id){
     if(confirm("Adakah buku ini sudah dipulangkan?")){
@@ -185,6 +186,16 @@ window.pulangkanBuku = function(id){
         alert("Buku berjaya dipulangkan.");
     }
 };
+  window.kosongkanBorang = function () {
+    document.getElementById("noAhli").value = "";
+    document.getElementById("nama").value = "";
+    document.getElementById("tahun").selectedIndex = 0;
+    document.getElementById("noAcc").value = "";
+    document.getElementById("tajuk").value = "";
+    document.getElementById("kategori").selectedIndex = 0;
+
+    document.getElementById("noAhli").focus();
+}
 
 function paparData(data){
   let kumpulan = {};
